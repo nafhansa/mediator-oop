@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   // Use repo name as base path only in production (so local dev stays clean)
   basePath: isProd ? "/mediator-oop" : undefined,
   assetPrefix: isProd ? "/mediator-oop/" : undefined,
-  eslint: { ignoreDuringBuilds: true },
+    // eslint: { ignoreDuringBuilds: true },
 };
 
 export default nextConfig;
