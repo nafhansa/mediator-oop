@@ -24,12 +24,12 @@ export default function Page() {
         </p>
 
         <div className="flex gap-4">
-          <button className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-bold tracking-wide hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(217,70,239,0.3)]">
+          <a href="#tutorial" className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-bold tracking-wide hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(217,70,239,0.3)]">
             START TUTORIAL
-          </button>
-          <button className="px-8 py-4 bg-secondary/10 border border-secondary/50 text-secondary rounded-lg font-bold tracking-wide hover:bg-secondary/20 transition-all backdrop-blur-sm">
+          </a>
+          <a href="#implementation" className="px-8 py-4 bg-secondary/10 border border-secondary/50 text-secondary rounded-lg font-bold tracking-wide hover:bg-secondary/20 transition-all backdrop-blur-sm">
             VIEW CODE
-          </button>
+          </a>
         </div>
 
         <div className="absolute bottom-10 animate-bounce">
@@ -38,7 +38,7 @@ export default function Page() {
       </section>
 
       {/* Explanation Section */}
-      <section className="relative z-10 py-24 px-4">
+  <section id="tutorial" className="relative z-10 py-24 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
             <div className="space-y-6">
@@ -136,7 +136,7 @@ export default function Page() {
       </section>
 
       {/* Code Example Section */}
-      <section className="relative z-10 py-24 px-4">
+  <section id="implementation" className="relative z-10 py-24 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <Code2 className="w-8 h-8 text-primary" />
