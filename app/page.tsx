@@ -15,7 +15,7 @@ export default function Page() {
         </div>
         
         <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50 neon-text">
-          MEDIATOR
+          MEDIATOR PATTERN
         </h1>
         
         <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mb-12 leading-relaxed">
@@ -140,7 +140,7 @@ export default function Page() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <Code2 className="w-8 h-8 text-primary" />
-            <h2 className="text-3xl font-bold">Implementation</h2>
+            <h2 className="text-3xl font-bold">Implementation Java Code</h2>
           </div>
           
           <div className="glass-panel rounded-xl overflow-hidden border border-white/10">
@@ -150,7 +150,7 @@ export default function Page() {
                 <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
                 <div className="w-3 h-3 rounded-full bg-green-500/50" />
               </div>
-              <span className="text-xs font-mono text-muted-foreground ml-2">GameMediator.ts</span>
+              <span className="text-xs font-mono text-muted-foreground ml-2">GameMediator.java</span>
             </div>
             <div className="p-6 overflow-x-auto">
               <pre className="font-mono text-sm text-blue-100">
@@ -189,6 +189,7 @@ class GameMediator implements Mediator {
 
       <footer className="relative z-10 py-12 text-center text-muted-foreground border-t border-white/5 bg-black/40">
         <p>© 2025 Design Patterns Arcade. Built with Next.js & Three.js</p>
+        <p>Nafhan 18224027 | Faris 18224025 | Mishael 18224005 | Irghi 18224041</p>
       </footer>
     </main>
   )
