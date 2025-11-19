@@ -4,21 +4,24 @@ import { useRef } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Points, PointMaterial, Float } from "@react-three/drei"
 import * as random from "maath/random/dist/maath-random.esm"
+import * as THREE from 'three'
 
-function Stars(props: any) {
-  const ref = useRef<any>()
+function Stars(props: React.ComponentProps<'group'>) {
+  // Using loose typing here to avoid complexity for demo purposes
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const groupRef = useRef<THREE.Group | null>(null)
   const sphere = random.inSphere(new Float32Array(5000), { radius: 1.5 }) as Float32Array
 
-  useFrame((state, delta) => {
-    if (ref.current) {
-      ref.current.rotation.x -= delta / 10
-      ref.current.rotation.y -= delta / 15
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.x -= delta / 10
+      groupRef.current.rotation.y -= delta / 15
     }
   })
 
   return (
-    <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={sphere} stride={3} frustumCulled={false} {...props}>
+  <group ref={groupRef} rotation={[0, 0, Math.PI / 4]}>
+      <Points positions={sphere} stride={3} frustumCulled={false}>
         <PointMaterial
           transparent
           color="#f272c8"
@@ -32,7 +35,7 @@ function Stars(props: any) {
 }
 
 function FloatingShapes() {
-  const meshRef = useRef<any>()
+  const meshRef = useRef<THREE.Group | null>(null)
   
   useFrame((state) => {
     const t = state.clock.getElapsedTime()

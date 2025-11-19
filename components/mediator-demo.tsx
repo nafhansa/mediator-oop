@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight, MessageSquare, Gamepad2, Speaker, Monitor, Server } from 'lucide-react'
+import { ArrowRight, Gamepad2, Speaker, Monitor, Server } from 'lucide-react'
 import { cn } from "@/lib/utils"
 
 type Log = {

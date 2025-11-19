@@ -1,6 +1,7 @@
 import { ThreeBackground } from "@/components/three-background"
 import { MediatorDemo } from "@/components/mediator-demo"
-import { ArrowDown, Code2, Layers, Network, ShieldCheck } from 'lucide-react'
+import { ArrowDown, Code2, Layers, ShieldCheck } from 'lucide-react'
+/* eslint-disable react/no-unescaped-entities */
 
 export default function Page() {
   return (
@@ -52,7 +53,7 @@ export default function Page() {
                 <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
                   <li>Tight coupling between components</li>
                   <li>Hard to maintain and extend</li>
-                  <li>"Spaghetti Code" architecture</li>
+                  <li>&quot;Spaghetti Code&quot; architecture</li>
                 </ul>
               </div>
             </div>
