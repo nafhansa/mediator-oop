@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight, Gamepad2, Speaker, Monitor, Server } from 'lucide-react'
+import { ArrowRight, Gamepad2, Speaker, Monitor, Server, Zap, Trophy, Heart } from 'lucide-react'
 import { cn } from "@/lib/utils"
 
 type Log = {
@@ -39,7 +39,7 @@ export function MediatorDemo() {
     }, ...prev].slice(0, 5))
   }
 
-  const triggerAction = async (action: "JUMP" | "COIN" | "GAME_OVER") => {
+  const triggerAction = async (action: "JUMP" | "COIN" | "GAME_OVER" | "ENEMY_HIT" | "POWERUP" | "LEVEL_COMPLETE") => {
     // Reset states
     setPlayerStatus("idle")
     setMediatorStatus("idle")
@@ -50,7 +50,15 @@ export function MediatorDemo() {
     // Step 1: Player Action -> Mediator
     setPlayerStatus("active")
     setActivePath({ from: "player", to: "mediator" })
-    addLog("Player Input", "Game Mediator", `User pressed ${action}`)
+    const actionNames: Record<string, string> = {
+      "JUMP": "Jump",
+      "COIN": "Coin Collected",
+      "GAME_OVER": "Game Over",
+      "ENEMY_HIT": "Enemy Hit",
+      "POWERUP": "Power-Up Collected",
+      "LEVEL_COMPLETE": "Level Complete"
+    }
+    addLog("Player Input", "Game Mediator", `Event: ${actionNames[action]}`)
     
     await new Promise(r => setTimeout(r, 800))
     setPlayerStatus("idle")
@@ -89,6 +97,43 @@ export function MediatorDemo() {
       setSoundStatus("receiving")
       setScoreStatus("receiving")
       addLog("Game Mediator", "ALL SYSTEMS", "Trigger Game Over Sequence")
+    } else if (action === "ENEMY_HIT") {
+      setActivePath({ from: "mediator", to: "graphics" })
+      setGraphicsStatus("receiving")
+      addLog("Game Mediator", "Graphics Engine", "Play 'Hit' Effect")
+      
+      setTimeout(() => {
+        setActivePath({ from: "mediator", to: "sound" })
+        setSoundStatus("receiving")
+        addLog("Game Mediator", "Sound System", "Play 'Hit_SFX.wav'")
+      }, 200)
+      
+      setTimeout(() => {
+        setActivePath({ from: "mediator", to: "score" })
+        setScoreStatus("receiving")
+        addLog("Game Mediator", "Score Manager", "Reduce Lives")
+      }, 400)
+    } else if (action === "POWERUP") {
+      setActivePath({ from: "mediator", to: "graphics" })
+      setGraphicsStatus("receiving")
+      addLog("Game Mediator", "Graphics Engine", "Play 'Powerup' Animation")
+      
+      setTimeout(() => {
+        setActivePath({ from: "mediator", to: "sound" })
+        setSoundStatus("receiving")
+        addLog("Game Mediator", "Sound System", "Play 'Powerup_SFX.wav'")
+      }, 200)
+      
+      setTimeout(() => {
+        setActivePath({ from: "mediator", to: "score" })
+        setScoreStatus("receiving")
+        addLog("Game Mediator", "Score Manager", "Add 500 Bonus Points")
+      }, 400)
+    } else if (action === "LEVEL_COMPLETE") {
+      setGraphicsStatus("receiving")
+      setSoundStatus("receiving")
+      setScoreStatus("receiving")
+      addLog("Game Mediator", "ALL SYSTEMS", "Trigger Level Complete Sequence")
     }
 
     // Reset after animation
@@ -102,53 +147,74 @@ export function MediatorDemo() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
         
         {/* Left Column: Controls */}
-        <div className="space-y-6">
-          <div className="glass-panel p-6 rounded-xl border border-primary/30">
-            <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-              <Gamepad2 className="w-6 h-6" /> Player Input
+        <div className="space-y-4 sm:space-y-6">
+          <div className="glass-panel p-4 sm:p-6 rounded-xl border border-primary/30">
+            <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 sm:mb-4 flex items-center gap-2">
+              <Gamepad2 className="w-5 sm:w-6 h-5 sm:h-6" /> Player Input
             </h3>
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
               Simulate user interactions. Notice how the Player component 
               <span className="text-destructive font-bold"> never </span> 
               talks directly to Sound or Graphics.
             </p>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3 grid grid-cols-2 md:grid-cols-1 gap-2 sm:gap-3">
               <button 
                 onClick={() => triggerAction("JUMP")}
-                className="w-full py-3 px-4 bg-primary/10 hover:bg-primary/20 border border-primary/50 rounded-lg text-primary font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group"
+                className="py-2 sm:py-3 px-3 sm:px-4 bg-primary/10 hover:bg-primary/20 border border-primary/50 rounded-lg text-primary font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group text-xs sm:text-sm col-span-1"
               >
-                <span>PRESS JUMP</span>
-                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span>JUMP</span>
+                <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
               <button 
                 onClick={() => triggerAction("COIN")}
-                className="w-full py-3 px-4 bg-secondary/10 hover:bg-secondary/20 border border-secondary/50 rounded-lg text-secondary font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group"
+                className="py-2 sm:py-3 px-3 sm:px-4 bg-secondary/10 hover:bg-secondary/20 border border-secondary/50 rounded-lg text-secondary font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group text-xs sm:text-sm col-span-1"
               >
-                <span>COLLECT COIN</span>
-                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span>COIN COLLECTOR</span>
+                <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+              <button 
+                onClick={() => triggerAction("ENEMY_HIT")}
+                className="py-2 sm:py-3 px-3 sm:px-4 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/50 rounded-lg text-orange-500 font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group text-xs sm:text-sm col-span-1"
+              >
+                <span>HIT OPPONENT</span>
+                <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+              <button 
+                onClick={() => triggerAction("POWERUP")}
+                className="py-2 sm:py-3 px-3 sm:px-4 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-500 font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group text-xs sm:text-sm col-span-1"
+              >
+                <span>POWERUP</span>
+                <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+              <button 
+                onClick={() => triggerAction("LEVEL_COMPLETE")}
+                className="py-2 sm:py-3 px-3 sm:px-4 bg-green-500/10 hover:bg-green-500/20 border border-green-500/50 rounded-lg text-green-500 font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group text-xs sm:text-sm col-span-1"
+              >
+                <span>LEVEL UP</span>
+                <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
               <button 
                 onClick={() => triggerAction("GAME_OVER")}
-                className="w-full py-3 px-4 bg-destructive/10 hover:bg-destructive/20 border border-destructive/50 rounded-lg text-destructive font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group"
+                className="py-2 sm:py-3 px-3 sm:px-4 bg-destructive/10 hover:bg-destructive/20 border border-destructive/50 rounded-lg text-destructive font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-between group text-xs sm:text-sm col-span-1"
               >
-                <span>GAME OVER</span>
-                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span> GAME OVER</span>
+                <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             </div>
           </div>
 
-          <div className="glass-panel p-4 rounded-xl border border-white/10 h-[300px] overflow-hidden flex flex-col">
-            <div className="flex items-center gap-2 mb-3 border-b border-white/10 pb-2">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <div className="w-3 h-3 rounded-full bg-green-500" />
-              <span className="text-xs font-mono text-muted-foreground ml-auto">SYSTEM_LOG.txt</span>
+          <div className="glass-panel p-3 sm:p-4 rounded-xl border border-white/10 h-[250px] sm:h-[300px] overflow-hidden flex flex-col">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 border-b border-white/10 pb-2">
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500" />
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500" />
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
+              <span className="text-[8px] sm:text-xs font-mono text-muted-foreground ml-auto">SYSTEM_LOG.txt</span>
             </div>
-            <div className="flex-1 overflow-y-auto font-mono text-xs space-y-2 pr-2 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto font-mono text-[10px] sm:text-xs space-y-1 sm:space-y-2 pr-2 custom-scrollbar">
               <AnimatePresence initial={false}>
                 {logs.map((log) => (
                   <motion.div
@@ -157,15 +223,15 @@ export function MediatorDemo() {
                     animate={{ opacity: 1, x: 0 }}
                     className="p-2 rounded bg-black/40 border-l-2 border-primary"
                   >
-                    <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
+                    <div className="flex justify-between text-[8px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1 gap-1">
                       <span>[{log.timestamp}]</span>
-                      <span>{log.source} → {log.target}</span>
+                      <span className="hidden sm:inline">{log.source} → {log.target}</span>
                     </div>
-                    <div className="text-primary-foreground">{log.message}</div>
+                    <div className="text-primary-foreground text-[9px] sm:text-xs">{log.message}</div>
                   </motion.div>
                 ))}
                 {logs.length === 0 && (
-                  <div className="text-muted-foreground italic text-center mt-10">Waiting for input...</div>
+                  <div className="text-muted-foreground italic text-center text-xs mt-10">Waiting for input...</div>
                 )}
               </AnimatePresence>
             </div>
@@ -173,7 +239,7 @@ export function MediatorDemo() {
         </div>
 
         {/* Right Column: Visual Diagram */}
-        <div className="lg:col-span-2 relative h-[600px] glass-panel rounded-xl border border-white/10 p-8 flex items-center justify-center bg-black/20">
+        <div className="lg:col-span-2 relative w-full aspect-square sm:aspect-auto sm:h-[600px] glass-panel rounded-xl border border-white/10 p-4 sm:p-6 md:p-8 flex items-center justify-center bg-black/20">
           
           {/* Connection Lines SVG Layer */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -184,10 +250,10 @@ export function MediatorDemo() {
             </defs>
             
             {/* Lines from Mediator to others */}
-            <line x1="50%" y1="50%" x2="20%" y2="20%" className="stroke-muted-foreground/20 stroke-2" />
-            <line x1="50%" y1="50%" x2="80%" y2="20%" className="stroke-muted-foreground/20 stroke-2" />
-            <line x1="50%" y1="50%" x2="20%" y2="80%" className="stroke-muted-foreground/20 stroke-2" />
-            <line x1="50%" y1="50%" x2="80%" y2="80%" className="stroke-muted-foreground/20 stroke-2" />
+            <line x1="50%" y1="50%" x2="20%" y2="20%" className="stroke-muted-foreground/20 stroke-1 sm:stroke-2" />
+            <line x1="50%" y1="50%" x2="80%" y2="20%" className="stroke-muted-foreground/20 stroke-1 sm:stroke-2" />
+            <line x1="50%" y1="50%" x2="20%" y2="80%" className="stroke-muted-foreground/20 stroke-1 sm:stroke-2" />
+            <line x1="50%" y1="50%" x2="80%" y2="80%" className="stroke-muted-foreground/20 stroke-1 sm:stroke-2" />
 
             {/* Active Paths */}
             {activePath?.from === "player" && activePath?.to === "mediator" && (
@@ -218,57 +284,57 @@ export function MediatorDemo() {
             {/* Center: Mediator */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <div className={cn(
-                "w-40 h-40 rounded-full flex flex-col items-center justify-center border-4 transition-all duration-300 bg-black/80 backdrop-blur-md z-20",
+                "w-24 sm:w-32 md:w-40 h-24 sm:h-32 md:h-40 rounded-full flex flex-col items-center justify-center border-2 sm:border-4 transition-all duration-300 bg-black/80 backdrop-blur-md z-20",
                 mediatorStatus === "active" ? "border-primary shadow-[0_0_30px_rgba(217,70,239,0.5)] scale-110" : 
                 mediatorStatus === "receiving" ? "border-primary/50 scale-105" : "border-white/10"
               )}>
-                <Server className={cn("w-10 h-10 mb-2 transition-colors", mediatorStatus !== "idle" ? "text-primary" : "text-muted-foreground")} />
-                <span className="font-bold text-sm">Game Mediator</span>
-                <span className="text-[10px] text-muted-foreground mt-1">Central Hub</span>
+                <Server className={cn("w-6 sm:w-8 md:w-10 h-6 sm:h-8 md:h-10 mb-1 sm:mb-2 transition-colors", mediatorStatus !== "idle" ? "text-primary" : "text-muted-foreground")} />
+                <span className="font-bold text-[9px] sm:text-xs md:text-sm text-center px-1">Mediator</span>
+                <span className="text-[7px] sm:text-[10px] text-muted-foreground mt-0.5">Hub</span>
               </div>
             </div>
 
             {/* Top Left: Player Input */}
-            <div className="absolute top-[10%] left-[10%]">
+            <div className="absolute top-[8%] left-[8%]">
               <div className={cn(
-                "w-32 h-32 rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 bg-black/60",
+                "w-20 sm:w-24 md:w-32 h-20 sm:h-24 md:h-32 rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 bg-black/60",
                 playerStatus === "active" ? "border-pink-500 shadow-[0_0_20px_rgba(236,72,153,0.4)] -translate-y-2" : "border-white/10"
               )}>
-                <Gamepad2 className="w-8 h-8 mb-2 text-pink-500" />
-                <span className="font-bold text-xs">Player Input</span>
+                <Gamepad2 className="w-5 sm:w-6 md:w-8 h-5 sm:h-6 md:h-8 mb-1 sm:mb-2 text-pink-500" />
+                <span className="font-bold text-[8px] sm:text-xs md:text-sm text-center">Player</span>
               </div>
             </div>
 
             {/* Top Right: Graphics Engine */}
-            <div className="absolute top-[10%] right-[10%]">
+            <div className="absolute top-[8%] right-[8%]">
               <div className={cn(
-                "w-32 h-32 rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 bg-black/60",
+                "w-20 sm:w-24 md:w-32 h-20 sm:h-24 md:h-32 rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 bg-black/60",
                 graphicsStatus === "receiving" ? "border-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-105" : "border-white/10"
               )}>
-                <Monitor className="w-8 h-8 mb-2 text-cyan-500" />
-                <span className="font-bold text-xs">Graphics Engine</span>
+                <Monitor className="w-5 sm:w-6 md:w-8 h-5 sm:h-6 md:h-8 mb-1 sm:mb-2 text-cyan-500" />
+                <span className="font-bold text-[8px] sm:text-xs md:text-sm text-center">Graphics</span>
               </div>
             </div>
 
             {/* Bottom Left: Sound System */}
-            <div className="absolute bottom-[10%] left-[10%]">
+            <div className="absolute bottom-[8%] left-[8%]">
               <div className={cn(
-                "w-32 h-32 rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 bg-black/60",
+                "w-20 sm:w-24 md:w-32 h-20 sm:h-24 md:h-32 rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 bg-black/60",
                 soundStatus === "receiving" ? "border-yellow-500 shadow-[0_0_20px_rgba(234,179,8,0.4)] scale-105" : "border-white/10"
               )}>
-                <Speaker className="w-8 h-8 mb-2 text-yellow-500" />
-                <span className="font-bold text-xs">Sound System</span>
+                <Speaker className="w-5 sm:w-6 md:w-8 h-5 sm:h-6 md:h-8 mb-1 sm:mb-2 text-yellow-500" />
+                <span className="font-bold text-[8px] sm:text-xs md:text-sm text-center">Sound</span>
               </div>
             </div>
 
             {/* Bottom Right: Score Manager */}
-            <div className="absolute bottom-[10%] right-[10%]">
+            <div className="absolute bottom-[8%] right-[8%]">
               <div className={cn(
-                "w-32 h-32 rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 bg-black/60",
+                "w-20 sm:w-24 md:w-32 h-20 sm:h-24 md:h-32 rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 bg-black/60",
                 scoreStatus === "receiving" ? "border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.4)] scale-105" : "border-white/10"
               )}>
-                <div className="text-2xl font-mono font-bold text-green-500 mb-1">0950</div>
-                <span className="font-bold text-xs">Score Manager</span>
+                <div className="text-lg sm:text-xl md:text-2xl font-mono font-bold text-green-500 mb-0.5 sm:mb-1">09500</div>
+                <span className="font-bold text-[8px] sm:text-xs md:text-sm text-center">Score</span>
               </div>
             </div>
 
